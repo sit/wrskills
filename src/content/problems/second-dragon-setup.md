@@ -5,7 +5,6 @@ roles: ["jungle", "support"]
 championTypes: ["tank", "support"]
 topics: ["objective-control"]
 order: 5
-points: 250
 ---
 
 # Second Dragon Setup

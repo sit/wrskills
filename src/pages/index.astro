@@ -1,33 +1,173 @@
 ---
+import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
-import SkillTree from '../components/SkillTree.astro';
+import { userProgress } from '../store/progress';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const problems = await getCollection('problems');
+const topics = await getCollection('topics');
+
+// Group problems by difficulty and then by topic
+const difficulties = ['iron', 'bronze', 'silver', 'gold', 'platinum', 'emerald', 'diamond', 'master', 'grandmaster', 'challenger'] as const;
+
+// Define colors for each difficulty
+const difficultyColors: Record<string, { bg: string, text: string }> = {
+	iron: { bg: 'var(--secondary)', text: 'white' },
+	bronze: { bg: '#cd7f32', text: 'white' },
+	silver: { bg: '#c0c0c0', text: 'black' },
+	gold: { bg: '#ffd700', text: 'black' },
+	platinum: { bg: '#e5e4e2', text: 'black' },
+	emerald: { bg: '#50c878', text: 'white' },
+	diamond: { bg: '#b9f2ff', text: 'black' },
+	master: { bg: '#9370db', text: 'white' },
+	grandmaster: { bg: '#ff4500', text: 'white' },
+	challenger: { bg: '#ff1493', text: 'white' }
+};
+
+const problemsByDifficultyAndTopic = difficulties.reduce((acc, diff) => {
+	const problemsInDifficulty = problems.filter(p => p.data.difficulty === diff);
+	
+	if (problemsInDifficulty.length === 0) return acc;
+	
+	acc[diff] = topics.reduce((topicAcc, topic) => {
+		const problemsInTopic = problemsInDifficulty.filter(p => 
+			p.data.topics.includes(topic.slug)
+		).sort((a, b) => a.data.order - b.data.order);
+		
+		if (problemsInTopic.length > 0) {
+			topicAcc[topic.slug] = {
+				topic,
+				problems: problemsInTopic
+			};
+		}
+		return topicAcc;
+	}, {} as Record<string, { topic: typeof topics[0], problems: typeof problems }>);
+	
+	return acc;
+}, {} as Record<string, Record<string, { topic: typeof topics[0], problems: typeof problems }>>);
 ---
 
 <Layout title="Wild Rift Learning Platform">
-	<main class="container mx-auto px-4 py-8">
-		<h1 class="text-4xl font-bold mb-8">Wild Rift Learning Platform</h1>
-		<div class="mb-8">
-			<p class="text-lg">
-				Master Wild Rift's key concepts through interactive problems and challenges.
-				Select a topic below to begin your journey.
-			</p>
+	<main>
+		<h1>Wild Rift Learning Platform</h1>
+		<p>Master Wild Rift's key concepts through interactive problems and challenges.</p>
+
+		<button id="reset-progress" class="outline">Reset All Progress</button>
+
+		<div class="difficulty-grid">
+			{difficulties.map(diff => {
+				const topicsInDifficulty = problemsByDifficultyAndTopic[diff];
+				if (!topicsInDifficulty) return null;
+				
+				const diffStyle = difficultyColors[diff];
+				
+				return (
+					<section class="difficulty-section" style={`--diff-color: ${diffStyle.bg}; --diff-text: ${diffStyle.text}`}>
+						<header>
+							<h2>{diff.charAt(0).toUpperCase() + diff.slice(1)}</h2>
+							<p>
+								{Object.values(topicsInDifficulty).reduce(
+									(sum, { problems }) => sum + problems.length, 0
+								)} problems across {Object.keys(topicsInDifficulty).length} topics
+							</p>
+						</header>
+						
+						<div class="topics-list">
+							{Object.entries(topicsInDifficulty).map(([slug, { topic, problems }]) => (
+								<a href={`/learn/${diff}/${slug}`} class="topic-link">
+									<span class="topic-icon">{topic.data.icon}</span>
+									<span class="topic-title">{topic.data.title}</span>
+									<span class="problem-count">{problems.length} problems</span>
+								</a>
+							))}
+						</div>
+					</section>
+				);
+			})}
 		</div>
-		
-		<section class="skill-tree-container">
-			<h2 class="text-2xl font-semibold mb-6">Learning Path</h2>
-			<SkillTree />
-		</section>
 	</main>
 </Layout>
 
+<script>
+	const resetButton = document.getElementById('reset-progress');
+	resetButton?.addEventListener('click', () => {
+		localStorage.removeItem('userProgress');
+		window.location.reload();
+	});
+</script>
+
 <style>
-	.skill-tree-container {
-		background: #f8fafc;
-		border-radius: 1rem;
-		padding: 2rem;
-		box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+	#reset-progress {
+		margin: 1rem 0;
+	}
+
+	.difficulty-grid {
+		display: grid;
+		gap: 2rem;
+		margin-top: 2rem;
+	}
+
+	.difficulty-section {
+		border: 2px solid var(--diff-color);
+		border-radius: 0.75rem;
+		overflow: hidden;
+	}
+
+	.difficulty-section header {
+		background: var(--diff-color);
+		color: var(--diff-text);
+		padding: 1rem 1.5rem;
+	}
+
+	.difficulty-section h2 {
+		margin: 0;
+		font-size: 1.5rem;
+	}
+
+	.difficulty-section header p {
+		margin: 0.25rem 0 0 0;
+		opacity: 0.9;
+	}
+
+	.topics-list {
+		padding: 1rem;
+		display: grid;
+		gap: 0.5rem;
+	}
+
+	.topic-link {
+		display: grid;
+		grid-template-columns: auto 1fr auto;
+		align-items: center;
+		gap: 1rem;
+		padding: 0.75rem 1rem;
+		text-decoration: none;
+		color: inherit;
+		border-radius: 0.5rem;
+		transition: background-color 0.2s;
+	}
+
+	.topic-link:hover {
+		background: var(--secondary-hover);
+	}
+
+	.topic-icon {
+		font-size: 1.5rem;
+	}
+
+	.problem-count {
+		color: var(--muted);
+		font-size: 0.875rem;
+	}
+
+	@media (min-width: 768px) {
+		.difficulty-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	@media (min-width: 1200px) {
+		.difficulty-grid {
+			grid-template-columns: repeat(3, 1fr);
+		}
 	}
 </style>

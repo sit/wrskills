@@ -5,7 +5,6 @@ roles: ["top", "mid"]
 championTypes: ["mage", "assassin", "bruiser", "tank", "marksman"]
 topics: ["wave-management", "objective-control"]
 order: 2
-points: 150
 ---
 
 # Slow Push for Dragon

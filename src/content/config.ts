@@ -43,7 +43,6 @@ const problems = defineCollection({
     championTypes: z.array(championTypeEnum),
     topics: z.array(z.string()),
     order: z.number(),
-    points: z.number(),
     published: z.boolean().default(true),
   })
 });

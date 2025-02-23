@@ -5,7 +5,6 @@ roles: ["jungle"]
 championTypes: ["assassin", "bruiser", "tank"]
 topics: ["objective-control"]
 order: 3
-points: 150
 ---
 
 # Optimal Herald Timing

@@ -5,7 +5,6 @@ roles: ["top", "mid", "adc"]
 championTypes: ["mage", "assassin", "bruiser", "tank", "marksman"]
 topics: ["wave-management"]
 order: 1
-points: 100
 ---
 
 # Basic Wave Freeze
@@ -22,13 +21,13 @@ You're playing in the Baron lane and have a slight lead over your opponent. The 
 What is the optimal way to handle the minion wave in this situation?
 
 ## Options
-A) Push the wave quickly to the enemy tower
-B) Last hit only to maintain the wave position
-C) Thin out the enemy wave to set up a freeze near your tower
-D) Recall immediately to buy items
+1. Push the wave quickly to the enemy tower
+2. Last hit only to maintain the wave position
+3. Thin out the enemy wave to set up a freeze near your tower
+4. Recall immediately to buy items
 
 ## Correct Answer
-C) Thin out the enemy wave to set up a freeze near your tower
+C. Thin out the enemy wave to set up a freeze near your tower
 
 ## Explanation
 Setting up a freeze near your tower is optimal because:

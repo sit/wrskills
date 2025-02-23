@@ -5,7 +5,6 @@ roles: ["top", "mid"]
 championTypes: ["bruiser", "assassin"]
 topics: ["wave-management"]
 order: 4
-points: 200
 ---
 
 # Wave Management for Tower Diving

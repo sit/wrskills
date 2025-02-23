@@ -6,46 +6,107 @@ interface Props {
 }
 
 const { problem } = Astro.props;
+
+// Get color based on difficulty
+const difficultyColors: Record<string, { bg: string, text: string }> = {
+  iron: { bg: 'var(--secondary)', text: 'white' },
+  bronze: { bg: '#cd7f32', text: 'white' },
+  silver: { bg: '#c0c0c0', text: 'black' },
+  gold: { bg: '#ffd700', text: 'black' },
+  platinum: { bg: '#e5e4e2', text: 'black' },
+  emerald: { bg: '#50c878', text: 'white' },
+  diamond: { bg: '#b9f2ff', text: 'black' },
+  master: { bg: '#9370db', text: 'white' },
+  grandmaster: { bg: '#ff4500', text: 'white' },
+  challenger: { bg: '#ff1493', text: 'white' }
+};
+
+const diffStyle = difficultyColors[problem.data.difficulty];
 ---
 
-<div class="problem-card">
-  <h3><a href={`/problems/${problem.slug}`}>{problem.data.title}</a></h3>
-  <div class="metadata">
-    <span class="difficulty">{problem.data.difficulty}</span>
-    <span class="points">{problem.data.points} points</span>
+<article class="problem-card">
+  <div class="difficulty-badge" style={`background-color: ${diffStyle.bg}; color: ${diffStyle.text}`}>
+    {problem.data.difficulty}
   </div>
+  
+  <h3><a href={`/problems/${problem.slug}`}>{problem.data.title}</a></h3>
+  
+  <div class="metadata">
+  </div>
+  
   <div class="tags">
     {problem.data.roles.map(role => (
       <span class="tag role">{role}</span>
     ))}
     {problem.data.championTypes.map(type => (
-      <span class="tag champion-type">{type}</span>
+      <span class="tag type">{type}</span>
     ))}
   </div>
-</div>
+</article>
 
 <style>
   .problem-card {
-    border: 1px solid #ccc;
+    border: 1px solid var(--card-border-color);
     border-radius: 0.5rem;
     padding: 1rem;
+    position: relative;
+    background: var(--card-background-color);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .problem-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  .difficulty-badge {
+    position: absolute;
+    top: -0.75rem;
+    right: 1rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+
+  h3 {
+    margin: 0.5rem 0;
+    font-size: 1.25rem;
+  }
+
+  h3 a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  h3 a:hover {
+    text-decoration: underline;
   }
 
   .metadata {
-    display: flex;
-    gap: 1rem;
     margin: 0.5rem 0;
+    font-size: 0.875rem;
+    color: var(--muted);
   }
 
   .tags {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
+    margin-top: 1rem;
   }
 
   .tag {
     padding: 0.25rem 0.5rem;
     border-radius: 0.25rem;
-    font-size: 0.875rem;
+    font-size: 0.75rem;
+    background: var(--secondary);
+    color: var(--secondary-inverse);
+  }
+
+  .tag.role {
+    background: var(--primary);
+    color: var(--primary-inverse);
   }
 </style> 

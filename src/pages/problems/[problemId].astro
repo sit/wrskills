@@ -37,7 +37,6 @@ const problemTopics = topics.filter(topic =>
         <h1>{problem.data.title}</h1>
         <p>
           <span class="badge">{problem.data.difficulty}</span>
-          <span class="badge">{problem.data.points} points</span>
           {problem.data.roles.map(role => (
             <span class="badge">{role}</span>
           ))}

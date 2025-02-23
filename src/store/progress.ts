@@ -1,26 +1,19 @@
-import { atom, map } from 'nanostores';
+import { map } from 'nanostores';
 
-// Store for completed problems
-export const completedProblems = atom<Set<string>>(new Set());
+// Load initial state from localStorage
+const savedProgress = typeof localStorage !== 'undefined' 
+  ? JSON.parse(localStorage.getItem('userProgress') || '{"currentLevel":"iron","topicProgress":{}}')
+  : { currentLevel: 'iron', topicProgress: {} };
 
 // Store for user progress
-export const userProgress = map({
-  currentLevel: 'iron',
-  totalPoints: 0,
-  topicProgress: {} as Record<string, {
-    completed: number,
-    total: number,
-    lastAttempt: Date | null
-  }>
-});
+export const userProgress = map(savedProgress);
 
-// Helper functions to update progress
-export function markProblemComplete(problemId: string, points: number) {
-  completedProblems.set(new Set([...completedProblems.get(), problemId]));
-  
-  const current = userProgress.get();
-  userProgress.setKey('totalPoints', current.totalPoints + points);
-}
+// Save to localStorage when store updates
+userProgress.listen(state => {
+  if (typeof localStorage !== 'undefined') {
+    localStorage.setItem('userProgress', JSON.stringify(state));
+  }
+});
 
 export function updateTopicProgress(topicId: string, completed: number, total: number) {
   userProgress.setKey('topicProgress', {
