@@ -9,11 +9,11 @@ export async function getStaticPaths() {
 
   return topics.map(topic => {
     const topicProblems = problems.filter(problem => 
-      problem.data.topics.includes(topic.id)
+      problem.data.topics.includes(topic.slug)
     );
 
     return {
-      params: { topicId: topic.id },
+      params: { topicId: topic.slug },
       props: { topic, problems: topicProblems }
     };
   });
