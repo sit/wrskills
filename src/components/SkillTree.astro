@@ -1,0 +1,67 @@
+---
+import { getCollection } from 'astro:content';
+import TopicNode from './TopicNode.astro';
+
+const topics = await getCollection('topics');
+
+// Sort topics by order
+const sortedTopics = topics.sort((a, b) => a.data.order - b.data.order);
+
+// Create a map of topics that are required by other topics
+const requiredByMap = new Map();
+sortedTopics.forEach(topic => {
+  if (topic.data.requiredTopics) {
+    topic.data.requiredTopics.forEach(reqId => {
+      if (!requiredByMap.has(reqId)) {
+        requiredByMap.set(reqId, []);
+      }
+      requiredByMap.get(reqId).push(topic.id);
+    });
+  }
+});
+---
+
+<div class="skill-tree">
+  {sortedTopics.map((topic) => (
+    <div class="topic-container">
+      <TopicNode 
+        topic={topic}
+        requiredBy={requiredByMap.get(topic.id) || []}
+      />
+      
+      {/* Draw connection lines if this topic is required by others */}
+      {(requiredByMap.get(topic.id) || []).map(dependentId => (
+        <div class="connection-line"></div>
+      ))}
+    </div>
+  ))}
+</div>
+
+<style>
+  .skill-tree {
+    display: grid;
+    gap: 3rem;
+    padding: 2rem;
+    position: relative;
+  }
+
+  .topic-container {
+    position: relative;
+  }
+
+  .connection-line {
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    height: 2px;
+    background: #94a3b8;
+    transform-origin: left;
+    width: 3rem; /* Adjust based on your gap size */
+  }
+
+  @media (min-width: 768px) {
+    .skill-tree {
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+  }
+</style> 

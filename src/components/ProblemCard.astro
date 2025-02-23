@@ -1,0 +1,51 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  problem: CollectionEntry<'problems'>;
+}
+
+const { problem } = Astro.props;
+---
+
+<div class="problem-card">
+  <h3>{problem.data.title}</h3>
+  <div class="metadata">
+    <span class="difficulty">{problem.data.difficulty}</span>
+    <span class="points">{problem.data.points} points</span>
+  </div>
+  <div class="tags">
+    {problem.data.roles.map(role => (
+      <span class="tag role">{role}</span>
+    ))}
+    {problem.data.championTypes.map(type => (
+      <span class="tag champion-type">{type}</span>
+    ))}
+  </div>
+</div>
+
+<style>
+  .problem-card {
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
+    padding: 1rem;
+  }
+
+  .metadata {
+    display: flex;
+    gap: 1rem;
+    margin: 0.5rem 0;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .tag {
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+  }
+</style> 

@@ -1,11 +1,33 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
+import SkillTree from '../components/SkillTree.astro';
 
 // Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
 // Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
 ---
 
-<Layout>
-	<Welcome />
+<Layout title="Wild Rift Learning Platform">
+	<main class="container mx-auto px-4 py-8">
+		<h1 class="text-4xl font-bold mb-8">Wild Rift Learning Platform</h1>
+		<div class="mb-8">
+			<p class="text-lg">
+				Master Wild Rift's key concepts through interactive problems and challenges.
+				Select a topic below to begin your journey.
+			</p>
+		</div>
+		
+		<section class="skill-tree-container">
+			<h2 class="text-2xl font-semibold mb-6">Learning Path</h2>
+			<SkillTree />
+		</section>
+	</main>
 </Layout>
+
+<style>
+	.skill-tree-container {
+		background: #f8fafc;
+		border-radius: 1rem;
+		padding: 2rem;
+		box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+	}
+</style>
