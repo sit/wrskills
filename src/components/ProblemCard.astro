@@ -9,7 +9,7 @@ const { problem } = Astro.props;
 ---
 
 <div class="problem-card">
-  <h3>{problem.data.title}</h3>
+  <h3><a href={`/problems/${problem.slug}`}>{problem.data.title}</a></h3>
   <div class="metadata">
     <span class="difficulty">{problem.data.difficulty}</span>
     <span class="points">{problem.data.points} points</span>
