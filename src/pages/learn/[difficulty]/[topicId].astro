@@ -91,7 +91,9 @@ const isLastProblem = currentProblemIndex === problems.length - 1;
       </progress>
     </header>
 
-    <Content />
+    <div class="max-w-prose mx-auto p-8 bg-base-100 rounded-xl shadow-sm">
+      <Content />
+    </div>
 
     <footer>
       <button
@@ -160,32 +162,6 @@ const isLastProblem = currentProblemIndex === problems.length - 1;
     margin: 2rem 0;
   }
 
-  .progress-bar {
-    width: 100%;
-    height: 0.5rem;
-    background: var(--secondary);
-    border-radius: 0.25rem;
-    overflow: hidden;
-    margin: 1rem 0;
-    border: 1px solid white;
-    background: var(--card-background-color);
-  }
-
-  .progress-fill {
-    height: 100%;
-    background: var(--primary);
-    transition: width 0.3s ease;
-  }
-
-  .problem-content {
-    max-width: 80ch;
-    margin: 0 auto;
-    padding: 2rem;
-    background: var(--card-background-color);
-    border-radius: 0.75rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-
   footer {
     margin-top: 2rem;
     text-align: center;
@@ -206,19 +182,4 @@ const isLastProblem = currentProblemIndex === problems.length - 1;
     padding: 2rem;
     text-align: center;
   }
-
-  dialog h3 {
-    margin: 0;
-    font-size: 1.5rem;
-  }
-
-  dialog p {
-    margin: 1rem 0;
-    color: var(--muted);
-  }
-
-  dialog footer {
-    margin-top: 2rem;
-  }
 </style>
-
