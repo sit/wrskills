@@ -1,27 +1,43 @@
 ---
-import { getCollection } from 'astro:content';
-import Layout from '../../../layouts/Layout.astro';
-import { userProgress } from '../../../store/progress';
+import { getCollection } from "astro:content";
+import Layout from "../../../layouts/Layout.astro";
+import { userProgress } from "../../../store/progress";
 
 export async function getStaticPaths() {
-  const topics = await getCollection('topics');
-  const problems = await getCollection('problems');
-  const difficulties = ['iron', 'bronze', 'silver', 'gold', 'platinum', 'emerald', 'diamond', 'master', 'grandmaster', 'challenger'] as const;
+  const topics = await getCollection("topics");
+  const problems = await getCollection("problems");
+  const difficulties = [
+    "iron",
+    "bronze",
+    "silver",
+    "gold",
+    "platinum",
+    "emerald",
+    "diamond",
+    "master",
+    "grandmaster",
+    "challenger",
+  ] as const;
 
-  return difficulties.flatMap(difficulty => 
-    topics.map(topic => {
-      const topicProblems = problems.filter(p => 
-        p.data.difficulty === difficulty && 
-        p.data.topics.includes(topic.slug)
-      ).sort((a, b) => a.data.order - b.data.order);
+  return difficulties.flatMap((difficulty) =>
+    topics
+      .map((topic) => {
+        const topicProblems = problems
+          .filter(
+            (p) =>
+              p.data.difficulty === difficulty &&
+              p.data.topics.includes(topic.slug),
+          )
+          .sort((a, b) => a.data.order - b.data.order);
 
-      if (topicProblems.length === 0) return null;
+        if (topicProblems.length === 0) return null;
 
-      return {
-        params: { difficulty, topicId: topic.slug },
-        props: { topic, problems: topicProblems }
-      };
-    }).filter(Boolean)
+        return {
+          params: { difficulty, topicId: topic.slug },
+          props: { topic, problems: topicProblems },
+        };
+      })
+      .filter(Boolean),
   );
 }
 
@@ -33,7 +49,7 @@ const savedProgress = userProgress.get().topicProgress[topic.slug];
 const progress = {
   completed: 0,
   total: problems.length,
-  lastAttempt: null
+  lastAttempt: null,
 };
 
 // If we have saved progress and it's not complete, use it
@@ -49,7 +65,9 @@ const { Content } = await currentProblem.render();
 const isLastProblem = currentProblemIndex === problems.length - 1;
 ---
 
-<Layout title={`${topic.data.title} - ${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} - Wild Rift Learning`}>
+<Layout
+  title={`${topic.data.title} - ${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} - Wild Rift Learning`}
+>
   <main>
     <nav>
       <a href="/" role="button" class="outline">← Home</a>
@@ -58,26 +76,30 @@ const isLastProblem = currentProblemIndex === problems.length - 1;
     <header>
       <hgroup>
         <h1>{topic.data.icon} {topic.data.title}</h1>
-        <p>{difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} Level - Problem {currentProblemIndex + 1} of {problems.length}</p>
+        <p>
+          {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} Level - Problem
+          {currentProblemIndex + 1} of {problems.length}
+        </p>
       </hgroup>
 
-      <div class="progress-bar" aria-label="Topic Progress">
-        <div 
-          class="progress-fill" 
-          style={`width: ${(progress.completed / problems.length) * 100}%`}
-        ></div>
-      </div>
+      <progress
+        class="progress"
+        aria-label="Topic Progress"
+        value="${(progress.completed / problems.length) * 100}"
+        max="100"
+      >
+      </progress>
     </header>
 
-    <Content/>
+    <Content />
 
     <footer>
-      <button 
-        id="submit-button" 
-        class="primary"
+      <button
+        id="submit-button"
+        class="btn"
         data-topic-slug={topic.slug}
-        data-problems-length={problems.length}
-      >Submit & Continue</button>
+        data-problems-length={problems.length}>Submit & Continue</button
+      >
     </footer>
 
     <!-- Completion Modal -->
@@ -86,7 +108,9 @@ const isLastProblem = currentProblemIndex === problems.length - 1;
         <header>
           <h3>🎉 Topic Complete!</h3>
         </header>
-        <p>Congratulations! You've completed all problems in {topic.data.title}.</p>
+        <p>
+          Congratulations! You've completed all problems in {topic.data.title}.
+        </p>
         <footer>
           <a href="/" role="button" class="primary">Choose Next Topic</a>
         </footer>
@@ -96,23 +120,25 @@ const isLastProblem = currentProblemIndex === problems.length - 1;
 </Layout>
 
 <script>
-  import { userProgress } from '../../../store/progress';
+  import { userProgress } from "../../../store/progress";
 
-  const submitButton = document.getElementById('submit-button');
-  const completionModal = document.getElementById('completion-modal') as HTMLDialogElement;
+  const submitButton = document.getElementById("submit-button");
+  const completionModal = document.getElementById(
+    "completion-modal",
+  ) as HTMLDialogElement;
   const topicSlug = submitButton?.dataset.topicSlug;
   const problemsLength = Number(submitButton?.dataset.problemsLength);
 
-  submitButton?.addEventListener('click', () => {
+  submitButton?.addEventListener("click", () => {
     const progress = userProgress.get();
     if (!topicSlug) return;
-    
+
     // Update progress
     if (!progress.topicProgress[topicSlug]) {
       progress.topicProgress[topicSlug] = {
         completed: 0,
         total: problemsLength,
-        lastAttempt: new Date()
+        lastAttempt: new Date(),
       };
     }
 
@@ -194,4 +220,5 @@ const isLastProblem = currentProblemIndex === problems.length - 1;
   dialog footer {
     margin-top: 2rem;
   }
-</style> 
+</style>
+

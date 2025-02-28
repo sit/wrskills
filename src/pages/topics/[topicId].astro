@@ -1,20 +1,20 @@
 ---
-import { getCollection } from 'astro:content';
-import Layout from '../../layouts/Layout.astro';
-import ProblemCard from '../../components/ProblemCard.astro';
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import ProblemCard from "../../components/ProblemCard.astro";
 
 export async function getStaticPaths() {
-  const topics = await getCollection('topics');
-  const problems = await getCollection('problems');
+  const topics = await getCollection("topics");
+  const problems = await getCollection("problems");
 
-  return topics.map(topic => {
-    const topicProblems = problems.filter(problem => 
-      problem.data.topics.includes(topic.slug)
+  return topics.map((topic) => {
+    const topicProblems = problems.filter((problem) =>
+      problem.data.topics.includes(topic.slug),
     );
 
     return {
       params: { topicId: topic.slug },
-      props: { topic, problems: topicProblems }
+      props: { topic, problems: topicProblems },
     };
   });
 }
@@ -25,7 +25,9 @@ const { topic, problems } = Astro.props;
 <Layout title={`${topic.data.title} - Wild Rift Learning`}>
   <main class="container mx-auto px-4 py-8">
     <header class="mb-8">
-      <a href="/" class="text-blue-600 hover:text-blue-800 mb-4 inline-block">← Back to Topics</a>
+      <a href="/" class="text-blue-600 hover:text-blue-800 mb-4 inline-block"
+        >← Back to Topics</a
+      >
       <h1 class="text-4xl font-bold flex items-center gap-3">
         {topic.data.icon && <span>{topic.data.icon}</span>}
         {topic.data.title}
@@ -33,14 +35,12 @@ const { topic, problems } = Astro.props;
       <p class="text-lg text-gray-600 mt-2">{topic.data.description}</p>
     </header>
 
-    <section>
+    <section class="pb-6">
       {topic.body}
     </section>
 
     <section class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {problems.map(problem => (
-        <ProblemCard problem={problem} />
-      ))}
+      {problems.map((problem) => <ProblemCard problem={problem} />)}
     </section>
   </main>
-</Layout> 
+</Layout>

@@ -1,96 +1,149 @@
 ---
-import { getCollection } from 'astro:content';
-import Layout from '../layouts/Layout.astro';
-import { userProgress } from '../store/progress';
+import { getCollection } from "astro:content";
+import Layout from "../layouts/Layout.astro";
+import { userProgress } from "../store/progress";
 
-const problems = await getCollection('problems');
-const topics = await getCollection('topics');
+const problems = await getCollection("problems");
+const topics = await getCollection("topics");
 
 // Group problems by difficulty and then by topic
-const difficulties = ['iron', 'bronze', 'silver', 'gold', 'platinum', 'emerald', 'diamond', 'master', 'grandmaster', 'challenger'] as const;
+const difficulties = [
+	"iron",
+	"bronze",
+	"silver",
+	"gold",
+	"platinum",
+	"emerald",
+	"diamond",
+	"master",
+	"grandmaster",
+	"challenger",
+] as const;
 
 // Define colors for each difficulty
-const difficultyColors: Record<string, { bg: string, text: string }> = {
-	iron: { bg: 'var(--secondary)', text: 'white' },
-	bronze: { bg: '#cd7f32', text: 'white' },
-	silver: { bg: '#c0c0c0', text: 'black' },
-	gold: { bg: '#ffd700', text: 'black' },
-	platinum: { bg: '#e5e4e2', text: 'black' },
-	emerald: { bg: '#50c878', text: 'white' },
-	diamond: { bg: '#b9f2ff', text: 'black' },
-	master: { bg: '#9370db', text: 'white' },
-	grandmaster: { bg: '#ff4500', text: 'white' },
-	challenger: { bg: '#ff1493', text: 'white' }
+const difficultyColors: Record<string, { bg: string; text: string }> = {
+	iron: { bg: "var(--secondary)", text: "white" },
+	bronze: { bg: "#cd7f32", text: "white" },
+	silver: { bg: "#c0c0c0", text: "black" },
+	gold: { bg: "#ffd700", text: "black" },
+	platinum: { bg: "#e5e4e2", text: "black" },
+	emerald: { bg: "#50c878", text: "white" },
+	diamond: { bg: "#b9f2ff", text: "black" },
+	master: { bg: "#9370db", text: "white" },
+	grandmaster: { bg: "#ff4500", text: "white" },
+	challenger: { bg: "#ff1493", text: "white" },
 };
 
-const problemsByDifficultyAndTopic = difficulties.reduce((acc, diff) => {
-	const problemsInDifficulty = problems.filter(p => p.data.difficulty === diff);
-	
-	if (problemsInDifficulty.length === 0) return acc;
-	
-	acc[diff] = topics.reduce((topicAcc, topic) => {
-		const problemsInTopic = problemsInDifficulty.filter(p => 
-			p.data.topics.includes(topic.slug)
-		).sort((a, b) => a.data.order - b.data.order);
-		
-		if (problemsInTopic.length > 0) {
-			topicAcc[topic.slug] = {
-				topic,
-				problems: problemsInTopic
-			};
-		}
-		return topicAcc;
-	}, {} as Record<string, { topic: typeof topics[0], problems: typeof problems }>);
-	
-	return acc;
-}, {} as Record<string, Record<string, { topic: typeof topics[0], problems: typeof problems }>>);
+const problemsByDifficultyAndTopic = difficulties.reduce(
+	(acc, diff) => {
+		const problemsInDifficulty = problems.filter(
+			(p) => p.data.difficulty === diff,
+		);
+
+		if (problemsInDifficulty.length === 0) return acc;
+
+		acc[diff] = topics.reduce(
+			(topicAcc, topic) => {
+				const problemsInTopic = problemsInDifficulty
+					.filter((p) => p.data.topics.includes(topic.slug))
+					.sort((a, b) => a.data.order - b.data.order);
+
+				if (problemsInTopic.length > 0) {
+					topicAcc[topic.slug] = {
+						topic,
+						problems: problemsInTopic,
+					};
+				}
+				return topicAcc;
+			},
+			{} as Record<
+				string,
+				{ topic: (typeof topics)[0]; problems: typeof problems }
+			>,
+		);
+
+		return acc;
+	},
+	{} as Record<
+		string,
+		Record<string, { topic: (typeof topics)[0]; problems: typeof problems }>
+	>,
+);
 ---
 
 <Layout title="Wild Rift Learning Platform">
 	<main>
 		<h1>Wild Rift Learning Platform</h1>
-		<p>Master Wild Rift's key concepts through interactive problems and challenges.</p>
+		<p>
+			Master Wild Rift's key concepts through interactive problems and
+			challenges.
+		</p>
 
-		<button id="reset-progress" class="outline">Reset All Progress</button>
+		<button id="reset-progress" class="btn">Reset All Progress</button>
 
 		<div class="difficulty-grid">
-			{difficulties.map(diff => {
-				const topicsInDifficulty = problemsByDifficultyAndTopic[diff];
-				if (!topicsInDifficulty) return null;
-				
-				const diffStyle = difficultyColors[diff];
-				
-				return (
-					<section class="difficulty-section" style={`--diff-color: ${diffStyle.bg}; --diff-text: ${diffStyle.text}`}>
-						<header>
-							<h2>{diff.charAt(0).toUpperCase() + diff.slice(1)}</h2>
-							<p>
-								{Object.values(topicsInDifficulty).reduce(
-									(sum, { problems }) => sum + problems.length, 0
-								)} problems across {Object.keys(topicsInDifficulty).length} topics
-							</p>
-						</header>
-						
-						<div class="topics-list">
-							{Object.entries(topicsInDifficulty).map(([slug, { topic, problems }]) => (
-								<a href={`/learn/${diff}/${slug}`} class="topic-link">
-									<span class="topic-icon">{topic.data.icon}</span>
-									<span class="topic-title">{topic.data.title}</span>
-									<span class="problem-count">{problems.length} problems</span>
-								</a>
-							))}
-						</div>
-					</section>
-				);
-			})}
+			{
+				difficulties.map((diff) => {
+					const topicsInDifficulty =
+						problemsByDifficultyAndTopic[diff];
+					if (!topicsInDifficulty) return null;
+
+					const diffStyle = difficultyColors[diff];
+
+					return (
+						<section
+							class="difficulty-section"
+							style={`--diff-color: ${diffStyle.bg}; --diff-text: ${diffStyle.text}`}
+						>
+							<header>
+								<h2>
+									{diff.charAt(0).toUpperCase() +
+										diff.slice(1)}
+								</h2>
+								<p>
+									{Object.values(topicsInDifficulty).reduce(
+										(sum, { problems }) =>
+											sum + problems.length,
+										0,
+									)}{" "}
+									problems across{" "}
+									{Object.keys(topicsInDifficulty).length}{" "}
+									topics
+								</p>
+							</header>
+
+							<div class="topics-list">
+								{Object.entries(topicsInDifficulty).map(
+									([slug, { topic, problems }]) => (
+										<a
+											href={`/learn/${diff}/${slug}`}
+											class="topic-link"
+										>
+											<span class="topic-icon">
+												{topic.data.icon}
+											</span>
+											<span class="topic-title">
+												{topic.data.title}
+											</span>
+											<span class="problem-count">
+												{problems.length} problems
+											</span>
+										</a>
+									),
+								)}
+							</div>
+						</section>
+					);
+				})
+			}
 		</div>
 	</main>
 </Layout>
 
 <script>
-	const resetButton = document.getElementById('reset-progress');
-	resetButton?.addEventListener('click', () => {
-		localStorage.removeItem('userProgress');
+	const resetButton = document.getElementById("reset-progress");
+	resetButton?.addEventListener("click", () => {
+		localStorage.removeItem("userProgress");
 		window.location.reload();
 	});
 </script>
