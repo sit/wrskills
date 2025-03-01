@@ -1,7 +1,7 @@
 ---
 import { getCollection } from "astro:content";
-import Layout from "../../../layouts/Layout.astro";
-import { userProgress } from "../../../store/progress";
+import Layout from "@/layouts/Layout.astro";
+import { userProgress } from "@/store/progress";
 
 export async function getStaticPaths() {
   const topics = await getCollection("topics");
@@ -68,57 +68,49 @@ const isLastProblem = currentProblemIndex === problems.length - 1;
 <Layout
   title={`${topic.data.title} - ${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} - Wild Rift Learning`}
 >
-  <main>
-    <nav>
-      <a href="/" role="button" class="outline">← Home</a>
-    </nav>
+  <header>
+    <hgroup>
+      <h1>{topic.data.icon} {topic.data.title}</h1>
+      <p>
+        {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} Level - Problem
+        {currentProblemIndex + 1} of {problems.length}
+      </p>
+    </hgroup>
 
+    <progress
+      class="progress"
+      aria-label="Topic Progress"
+      value="${(progress.completed / problems.length) * 100}"
+      max="100"
+    >
+    </progress>
+  </header>
+
+  <div class="max-w-prose mx-auto p-8 bg-amber-500 rounded-xl shadow-sm">
+    <Content />
+  </div>
+
+  <footer>
+    <button
+      id="submit-button"
+      class="btn"
+      data-topic-slug={topic.slug}
+      data-problems-length={problems.length}>Submit & Continue</button
+    >
+  </footer>
+
+  <!-- Completion Modal -->
+  <dialog id="completion-modal" class="modal">
     <header>
-      <hgroup>
-        <h1>{topic.data.icon} {topic.data.title}</h1>
-        <p>
-          {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} Level - Problem
-          {currentProblemIndex + 1} of {problems.length}
-        </p>
-      </hgroup>
-
-      <progress
-        class="progress"
-        aria-label="Topic Progress"
-        value="${(progress.completed / problems.length) * 100}"
-        max="100"
-      >
-      </progress>
+      <h3>🎉 Topic Complete!</h3>
     </header>
-
-    <div class="max-w-prose mx-auto p-8 bg-base-100 rounded-xl shadow-sm">
-      <Content />
-    </div>
-
+    <p>
+      Congratulations! You've completed all problems in {topic.data.title}.
+    </p>
     <footer>
-      <button
-        id="submit-button"
-        class="btn"
-        data-topic-slug={topic.slug}
-        data-problems-length={problems.length}>Submit & Continue</button
-      >
+      <a href="/" role="button" class="btn">Choose Next Topic</a>
     </footer>
-
-    <!-- Completion Modal -->
-    <dialog id="completion-modal">
-      <article>
-        <header>
-          <h3>🎉 Topic Complete!</h3>
-        </header>
-        <p>
-          Congratulations! You've completed all problems in {topic.data.title}.
-        </p>
-        <footer>
-          <a href="/" role="button" class="primary">Choose Next Topic</a>
-        </footer>
-      </article>
-    </dialog>
-  </main>
+  </dialog>
 </Layout>
 
 <script>

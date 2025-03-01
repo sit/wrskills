@@ -1,13 +1,13 @@
 ---
-import { getCollection } from 'astro:content';
-import Layout from '../../layouts/Layout.astro';
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
 
 export async function getStaticPaths() {
-  const problems = await getCollection('problems');
-  
-  return problems.map(problem => ({
+  const problems = await getCollection("problems");
+
+  return problems.map((problem) => ({
     params: { problemId: problem.slug },
-    props: { problem }
+    props: { problem },
   }));
 }
 
@@ -15,49 +15,49 @@ const { problem } = Astro.props;
 const { Content } = await problem.render();
 
 // Get topic information
-const topics = await getCollection('topics');
-const problemTopics = topics.filter(topic => 
-  problem.data.topics.includes(topic.slug)
+const topics = await getCollection("topics");
+const problemTopics = topics.filter((topic) =>
+  problem.data.topics.includes(topic.slug),
 );
 ---
 
 <Layout title={`${problem.data.title} - Wild Rift Learning`}>
-  <main>
-    <header>
-      <nav>
-        <a href="/" role="button" class="outline">← Home</a>
-        {problemTopics.map(topic => (
+  <header>
+    <nav>
+      <a href="/" role="button" class="outline">← Home</a>
+      {
+        problemTopics.map((topic) => (
           <a href={`/topics/${topic.slug}`} role="button" class="outline">
             {topic.data.icon} {topic.data.title}
           </a>
-        ))}
-      </nav>
+        ))
+      }
+    </nav>
 
-      <hgroup>
-        <h1>{problem.data.title}</h1>
-        <p>
-          <span class="badge">{problem.data.difficulty}</span>
-          {problem.data.roles.map(role => (
-            <span class="badge">{role}</span>
-          ))}
-          {problem.data.championTypes.map(type => (
+    <hgroup>
+      <h1>{problem.data.title}</h1>
+      <p>
+        <span class="badge">{problem.data.difficulty}</span>
+        {problem.data.roles.map((role) => <span class="badge">{role}</span>)}
+        {
+          problem.data.championTypes.map((type) => (
             <span class="badge">{type}</span>
-          ))}
-        </p>
-      </hgroup>
-    </header>
+          ))
+        }
+      </p>
+    </hgroup>
+  </header>
 
-    <article>
-      <Content />
-    </article>
-  </main>
+  <article>
+    <Content />
+  </article>
 </Layout>
 
 <style>
   header {
     margin-bottom: 2rem;
   }
-  
+
   nav {
     display: flex;
     gap: 1rem;
@@ -78,4 +78,4 @@ const problemTopics = topics.filter(topic =>
     max-width: 80ch;
     margin: 0 auto;
   }
-</style> 
+</style>

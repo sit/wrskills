@@ -1,5 +1,7 @@
 ---
-import '../styles/global.css'
+import BaseHead from "@/components/BaseHead.astro";
+import Navbar from "@/components/Navbar.astro";
+import Footer from "@/components/Footer.astro";
 
 interface Props {
 	title: string;
@@ -9,17 +11,14 @@ const { title } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" class="!overflow-x-hidden">
 	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<meta name="generator" content={Astro.generator} />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<title>{title}</title>
+		<BaseHead title={title} />
 	</head>
-	<body class="min-h-screen">
-		<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-			<slot />
-		</main>
+
+	<body class="bg-gray-500 text-white tracking-wide !overflow-x-hidden">
+		<header class="fixed top-0 w-screen z-[9999]"><Navbar /></header>
+		<main class="mx-auto max-w-7xl pt-28 md:pt-20"><slot /></main>
+		<footer class="w-screen bottom-0 overflow-x-hidden"><Footer /></footer>
 	</body>
 </html>
