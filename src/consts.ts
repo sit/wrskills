@@ -12,7 +12,7 @@ export const GITHUB_USERNAME = "sit";
 export const QUOTE = "Always be learning";
 export const NAV_LINKS: Array<{ title: string; href?: string }> = [
   {
-    title: "Skills",
+    title: "Topics",
   },
   {
     title: "Fire",
